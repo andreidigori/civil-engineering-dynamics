@@ -15,13 +15,15 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { KatexModule } from 'ng-katex';
-import { ChartsModule } from 'ng2-charts';
+import { PlotlyViaWindowModule } from 'angular-plotly.js';
 import { environment } from '../environments/environment';
 import { AppComponent } from './app.component';
+import { DeterminantPlotComponent } from './determinant-plot/determinant-plot.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    DeterminantPlotComponent
   ],
   imports: [
     BrowserModule,
@@ -40,7 +42,7 @@ import { AppComponent } from './app.component';
     MatSlideToggleModule,
     MatToolbarModule,
     KatexModule,
-    ChartsModule
+    PlotlyViaWindowModule
   ],
   bootstrap: [AppComponent]
 })

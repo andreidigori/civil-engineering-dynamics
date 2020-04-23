@@ -19,49 +19,56 @@
 					<mat-option [value]="2">2 x 2</mat-option>
 					<mat-option [value]="3">3 x 3</mat-option>
 				</mat-select>
-				<mat-error *ngIf="true">Alege tipul sistemului</mat-error>
+				<mat-error *ngIf="inputForm.hasError('required', 'size')">Alege tipul sistemului</mat-error>
 			</mat-form-field>
 			<span fxFlex.gt-xs="16px"></span>
 			<mat-form-field appearance="outline" color="accent" fxFlex fxFlex.xs="100">
 				<mat-label>Cifre după virgulă</mat-label>
 				<input matInput formControlName="approximation" type="number" min="1" max="4" step="1" placeholder="2" />
-				<mat-error *ngIf="true">Aproximație invalidă</mat-error>
+				<mat-error *ngIf="inputForm.hasError('min', 'approximation') || inputForm.hasError('max', 'approximation')">
+					Aproximație invalidă
+				</mat-error>
 			</mat-form-field>
 		</div>
-		<mat-slide-toggle formControlName="fullgraph">
-			Grafic deplin
-		</mat-slide-toggle>
+		<div class="fullgraph">
+			<mat-slide-toggle formControlName="fullgraph">Grafic deplin</mat-slide-toggle>
+		</div>
 	</mat-card>
-	<mat-accordion *ngIf="inputForm.get('size').value as size" formGroupName="coefficients" multi>
-		<mat-expansion-panel *ngFor="let index of getCoefficients(size)">
-			<mat-expansion-panel-header>
-				<mat-panel-title>
-					Coeficient r<sub class="coefficient-index">{{index}}</sub>
-				</mat-panel-title>
-			</mat-expansion-panel-header>
-			<div fxLayout="column">
-				<mat-form-field appearance="outline" color="accent">
-					<mat-label>Expresie matematică</mat-label>
-					<input #coefficientInput matInput [formControlName]="index" type="text" placeholder="0" />
-					<mat-error *ngIf="inputForm.hasError('math', ['coefficients', index])">Ecuație invalidă</mat-error>
-				</mat-form-field>
-			</div>
-			<div class="katex">
-				<ng-katex [equation]="getCoefficientTex(index)" [options]="katexOptions"></ng-katex>
-			</div>
-			<div fxLayoutAlign="center stretch" fxLayoutGap="8px" class="shortcuts">
-				<button *ngFor="let i of [1, 2, 3, 4]" mat-raised-button type="button" (click)="insert(index, 'phi' + i + '(')" color="primary" fxFlex>
-					φ<sub>{{i}}</sub>
-				</button>
-				<button *ngFor="let i of [1, 2]" mat-raised-button type="button" (click)="insert(index, 'eta' + i + '(')" color="warn" fxFlex>
-					η<sub>{{i}}</sub>
-				</button>
-				<button mat-raised-button type="button" (click)="insert(index, 'v)')" color="accent" fxFlex>
-					v
-				</button>
-			</div>
-		</mat-expansion-panel>
-	</mat-accordion>
+	<ng-template let-size [ngIf]="inputForm.get('size').value">
+		<mat-accordion formGroupName="coefficients" multi>
+			<mat-expansion-panel *ngFor="let index of coefficientsNames">
+				<mat-expansion-panel-header>
+					<mat-panel-title>
+						Coeficient r<sub class="coefficient-index">{{index}}</sub>
+					</mat-panel-title>
+				</mat-expansion-panel-header>
+				<div fxLayout="column">
+					<mat-form-field appearance="outline" color="accent">
+						<mat-label>Expresie matematică</mat-label>
+						<input #coefficientInput matInput [formControlName]="index" type="text" placeholder="0" />
+						<mat-error *ngIf="inputForm.hasError('math', ['coefficients', index])">Ecuație invalidă</mat-error>
+					</mat-form-field>
+				</div>
+				<div class="katex">
+					<ng-katex [equation]="getCoefficientTex(index)" [options]="katexOptions"></ng-katex>
+				</div>
+				<div fxLayoutAlign="center stretch" fxLayoutGap="8px" class="shortcuts">
+					<button *ngFor="let i of [1, 2, 3, 4]" mat-raised-button type="button"
+						(click)="insert(index, 'phi' + i + '(')" color="primary" fxFlex>
+						φ<sub>{{i}}</sub>
+					</button>
+					<button *ngFor="let i of [1, 2]" mat-raised-button type="button" (click)="insert(index, 'eta' + i + '(')"
+						color="warn" fxFlex>
+						η<sub>{{i}}</sub>
+					</button>
+					<button mat-raised-button type="button" (click)="insert(index, 'v)')" color="accent" fxFlex>
+						v
+					</button>
+				</div>
+			</mat-expansion-panel>
+		</mat-accordion>
+		<ng-katex equation="\Delta(v) = \begin{vmatrix}{{equationsTex}}\end{vmatrix}" [options]="katexOptions"></ng-katex>
+	</ng-template>
 	<div fxLayoutAlign="center center" fxLayoutGap="16px">
 		<ng-container *ngIf="isCalculating; else calculateButton">
 			<button mat-raised-button type="button" (click)="stopCalculation()" color="warn">
@@ -76,6 +83,6 @@
 		</ng-template>
 	</div>
 </form>
-<ng-katex [equation]="'v = ' + getResultTex()" [options]="katexOptions"></ng-katex>
-<ng-katex [equation]="'\\Delta(v) = ' + getDeterminantTex()" [options]="katexOptions"></ng-katex>
-<canvas height="480" baseChart chartType="line" [datasets]="[graphData]" [options]="graphOptions"></canvas>
+<ng-katex equation="v = {{result ? resultTex : '...'}}" [options]="katexOptions"></ng-katex>
+<ng-katex equation="\Delta(v) = {{result ? determinantTex : '...'}}" [options]="katexOptions"></ng-katex>
+<app-determinant-plot></app-determinant-plot>

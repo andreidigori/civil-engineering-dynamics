@@ -1,10 +1,10 @@
-import { Component, ViewChildren, QueryList, ElementRef, ViewChild, OnInit } from '@angular/core';
-import { FormBuilder, ValidationErrors, AbstractControl } from '@angular/forms';
+import { Component, ViewChildren, QueryList, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, ValidationErrors, AbstractControl, Validators } from '@angular/forms';
 import { interval, Subscription, animationFrameScheduler } from 'rxjs';
 import { takeWhile, finalize } from 'rxjs/operators';
 import { KatexOptions } from 'ng-katex';
-import * as math from 'mathjs';
-import { ChartDataSets, ChartOptions, ChartPoint } from 'chart.js';
+import { math } from './custom-math';
+import { DeterminantPlotComponent } from './determinant-plot/determinant-plot.component';
 
 @Component({
   selector: 'app-root',
@@ -13,7 +13,8 @@ import { ChartDataSets, ChartOptions, ChartPoint } from 'chart.js';
 })
 export class AppComponent implements OnInit {
 
-  @ViewChildren('coefficientInput') coefficientInputs!: QueryList<ElementRef<HTMLInputElement>>;
+  @ViewChildren('coefficientInput') coefficientInputs: QueryList<ElementRef<HTMLInputElement>>;
+  @ViewChild(DeterminantPlotComponent) plot: DeterminantPlotComponent;
 
   inputForm = this.fb.group({
     coefficients: this.fb.group({
@@ -24,82 +25,25 @@ export class AppComponent implements OnInit {
       23: [null, this.validateMathInput],
       33: [null, this.validateMathInput]
     }),
-    size: null,
-    approximation: 2,
+    size: [null, Validators.required],
+    approximation: [2, [Validators.min(1), Validators.max(4)]],
     fullgraph: true
   });
   katexOptions: KatexOptions = {
     displayMode: true
   };
-  graphData: ChartDataSets = {
-    data: [],
-    borderColor: '#f44336',
-    borderWidth: 1
-  };
-  graphOptions: ChartOptions = {
-    // width: 320,
-    /* font: {
-      family: '"Courier New", monospace',
-      color: '#fff'
-    },
-    margin: {
-      t: 20,
-      r: 20,
-      b: 40,
-      l: 42
-    },
-    xaxis: {
-      color: '#fff',
-      zerolinewidth: 2,
-      // showgrid: false,
-      range: [0, math.pi * 2],
-      dtick: 1
-    },
-    yaxis: {
-      color: '#fff',
-      zerolinewidth: 2,
-      // showgrid: false,
-      range: [-9, 9],
-      ticklen: 5,
-      dtick: 2
-    },
-    autosize: true,
-    height: 480,
-    paper_bgcolor: '#303030',
-    plot_bgcolor: '#303030' */
-  };
-  /* graphConfig: Partial<Plotly.Config> = {
-    staticPlot: true
-  }; */
   result: number;
 
+  private calculation = Subscription.EMPTY;
   private lastCoefficientsTex: { [index: string]: string } = {};
-  private calculation: Subscription;
   private lastDeterminant: number;
 
   get isCalculating() {
-    return !!this.calculation && !this.calculation.closed;
+    return !this.calculation.closed;
   }
 
-  constructor(
-    private fb: FormBuilder
-  ) {
-    const functions: math.ImportObject = {
-      phi1: (v: number) => math.evaluate('v ^ 2 * tan(v) / 3 / (tan(v) - v)', { v }),
-      phi2: (v: number) => math.evaluate('v * (tan(v) - v) / 8 / tan(v) / (tan(v / 2) - v / 2)', { v }),
-      phi3: (v: number) => math.evaluate('v * (v - sin(v)) / 4 / sin(v) / (tan(v / 2) - v / 2)', { v }),
-      phi4: (v: number) => math.evaluate('v ^ 2 * tan(v / 2) / 12 / (tan(v / 2) - v / 2)', { v }),
-      eta1: (v: number) => math.evaluate('v ^ 3 / 3 / (tan(v) - v)', { v }),
-      eta2: (v: number) => math.evaluate('v ^ 3 / 24 / (tan(v / 2) - v / 2)', { v })
-    };
-    math.import(functions, null);
-  }
-
-  ngOnInit() {
-    this.loadInput();
-  }
-
-  getCoefficients(size: number) {
+  get coefficientsNames() {
+    const size = this.inputForm.get('size').value as number;
     switch (size) {
       case 1: {
         return ['11'];
@@ -111,40 +55,54 @@ export class AppComponent implements OnInit {
         return ['11', '12', '13', '22', '23', '33'];
       }
     }
-    return [];
+  }
+
+  get equationsTex() {
+    const size = this.inputForm.get('size').value as number;
+    switch (size) {
+      case 1: {
+        return 'r_{11}';
+      }
+      case 2: {
+        return 'r_{11} & r_{12} \\\\ r_{21} & r_{22}';
+      }
+      case 3: {
+        return 'r_{11} & r_{12} & r_{13} \\\\ r_{21} & r_{22} & r_{23} \\\\ r_{31} & r_{32} & r_{33}';
+      }
+    }
+  }
+
+  get resultTex() {
+    const approximation = this.inputForm.get('approximation').value as number;
+    return this.result.toFixed(approximation);
+  }
+
+  get determinantTex() {
+    return this.lastDeterminant.toFixed(4);
+  }
+
+  constructor(
+    private fb: FormBuilder
+  ) { }
+
+  ngOnInit() {
+    this.loadInput();
   }
 
   getCoefficientTex(index: string) {
     try {
-      const value = this.getCoefficient(index);
+      const value = this.getCoefficientExpression(index);
       const node = math.parse(value);
       const formatted = node.toTex().replace(/(phi|eta)(\d)/g, '\\$1_$2');
       this.lastCoefficientsTex[index] = formatted;
     } catch (e) {
 
     }
-    return 'r_{' + index + '} = ' + this.lastCoefficientsTex[index];
-  }
-
-  getResultTex() {
-    if (!this.result) {
-      return '...';
-    }
-    const approximation = this.inputForm.get('approximation').value as number;
-    return this.result.toFixed(approximation);
-  }
-
-  getDeterminantTex() {
-    if (!this.result) {
-      return '...';
-    }
-    return this.calculateDeterminant(this.result).toFixed(4);
+    return `r_{${index}} = ${this.lastCoefficientsTex[index]}`;
   }
 
   insert(index: string, text: string) {
-    const size = this.inputForm.get('size').value as number;
-    const coefficients = this.getCoefficients(size);
-    const inputIndex = coefficients.indexOf(index);
+    const inputIndex = this.coefficientsNames.indexOf(index);
     const input = this.coefficientInputs.find((_, i) => inputIndex === i).nativeElement;
     const scrollTop = input.scrollTop;
     const position = input.selectionStart;
@@ -167,7 +125,7 @@ export class AppComponent implements OnInit {
   clear() {
     this.lastDeterminant = 0;
     this.result = 0;
-    this.graphData.data = [];
+    this.plot.reset();
   }
 
   stopCalculation() {
@@ -196,7 +154,8 @@ export class AppComponent implements OnInit {
       finalize(() => this.stopCalculation())
     );
     this.calculation = interval$.subscribe(_ => {
-      const values = [] as ChartPoint[];
+      const xValues = [] as number[];
+      const yValues = [] as number[];
       const limit = math.min(v + 0.1/*step * stepsCount*/, math.pi * 2) as number;
       for (; v < limit; v += step) {
         const determinant = this.calculateDeterminant(v);
@@ -212,19 +171,16 @@ export class AppComponent implements OnInit {
           }
           this.lastDeterminant = determinant;
         }
-        values.push({
-          x: v,
-          y: determinant
-        });
+        xValues.push(v);
+        yValues.push(determinant);
       }
-      const data = this.graphData.data as ChartPoint[];
-      data.push(...values);
+      this.plot.push(xValues, yValues);
     });
   }
 
   private loadInput() {
     try {
-      const value = localStorage.getItem('lastInput');
+      const value = localStorage.getItem('appMechanics3');
       const data = JSON.parse(value);
       this.inputForm.patchValue(data);
     } catch (e) {
@@ -234,7 +190,11 @@ export class AppComponent implements OnInit {
 
   private saveInput() {
     const value = JSON.stringify(this.inputForm.value);
-    localStorage.setItem('lastInput', value);
+    localStorage.setItem('appMechanics3', value);
+  }
+
+  private getCoefficientExpression(index: string) {
+    return this.inputForm.get(['coefficients', index]).value || '0';
   }
 
   private validateMathInput(control: AbstractControl): ValidationErrors | null {
@@ -243,44 +203,36 @@ export class AppComponent implements OnInit {
       math.evaluate(value, { v: 0.1 });
       return null;
     } catch (e) {
-console.log('fuck', e, math)
+
     }
     return {
       math: control.value
     };
   }
 
-  private getCoefficient(index: string) {
-    return this.inputForm.get(['coefficients', index]).value || '0';
-  }
-
   private calculateDeterminant(v: number) {
     const size = this.inputForm.get('size').value as number;
     switch (size) {
       case 1: {
-        const r11 = this.calculateCoefficient(v, '11');
+        const r11 = math.evaluate(this.getCoefficientExpression('11'), { v });
         return r11;
       }
       case 2: {
-        const r11 = this.calculateCoefficient(v, '11');
-        const r12 = this.calculateCoefficient(v, '12');
-        const r22 = this.calculateCoefficient(v, '22');
+        const r11 = math.evaluate(this.getCoefficientExpression('11'), { v });
+        const r12 = math.evaluate(this.getCoefficientExpression('12'), { v });
+        const r22 = math.evaluate(this.getCoefficientExpression('22'), { v });
         return r11 * r22 - r12 * r12;
       }
       case 3: {
-        const r11 = this.calculateCoefficient(v, '11');
-        const r12 = this.calculateCoefficient(v, '12');
-        const r13 = this.calculateCoefficient(v, '13');
-        const r22 = this.calculateCoefficient(v, '22');
-        const r23 = this.calculateCoefficient(v, '23');
-        const r33 = this.calculateCoefficient(v, '33');
+        const r11 = math.evaluate(this.getCoefficientExpression('11'), { v });
+        const r12 = math.evaluate(this.getCoefficientExpression('12'), { v });
+        const r13 = math.evaluate(this.getCoefficientExpression('13'), { v });
+        const r22 = math.evaluate(this.getCoefficientExpression('22'), { v });
+        const r23 = math.evaluate(this.getCoefficientExpression('23'), { v });
+        const r33 = math.evaluate(this.getCoefficientExpression('33'), { v });
         return r11 * r22 * r33 + r12 * r23 * r13 + r13 * r12 * r23 - r13 * r22 * r13 - r12 * r12 * r33 - r11 * r23 * r23;
       }
     }
     return 0;
-  }
-
-  private calculateCoefficient(v: number, index: string) {
-    return math.evaluate(this.getCoefficient(index), { v });
   }
 }
