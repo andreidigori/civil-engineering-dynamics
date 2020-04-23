@@ -33,7 +33,9 @@
               "./node_modules/katex/dist/katex.css",
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/plotly.js/dist/plotly.min.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -71,7 +73,8 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "mechanics3:build"
+            "browserTarget": "mechanics3:build",
+            "aot": false
           },
           "configurations": {
             "production": {
