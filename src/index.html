@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Mechanics3</title>
+  <title>Stabilitate și dinamică - UTM | DaSimple</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -10,9 +10,23 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#1976d2">
+
+	<style type="text/css">
+	.app-bootstrap
+	{
+		position: relative;
+		height: 100%;
+		background-image: url(data:image/png;base64,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);
+		background-repeat: no-repeat;
+		background-position: center;
+		filter: invert(100%);
+	}
+	</style>
 </head>
 <body class="mat-app-background">
-  <app-root></app-root>
+  <app-root>
+    <div class="app-bootstrap"></div>
+  </app-root>
   <noscript>Please enable JavaScript to continue using this application.</noscript>
 </body>
 </html>

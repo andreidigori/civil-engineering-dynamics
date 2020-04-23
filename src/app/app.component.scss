@@ -1,0 +1,33 @@
+mat-card, mat-accordion {
+	margin: 16px;
+}
+
+mat-accordion {
+	display: block;
+}
+
+sub.coefficient-index {
+	margin-top: 8px;
+	font-size: 0.6em;
+}
+
+.katex {
+	margin-bottom: 16px;
+	overflow: auto;
+}
+
+.shortcuts {
+	height: 36px;
+  margin: 0 -8px;
+
+	.mat-raised-button {
+		min-width: 0;
+		max-width: 64px;
+    padding: 0;
+
+		sub {
+			vertical-align: sub;
+			font-size: 0.6em;
+		}
+	}
+}
