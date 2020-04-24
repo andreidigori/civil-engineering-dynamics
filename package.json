@@ -1,6 +1,10 @@
 {
   "name": "civil-engineering-mechanics3",
   "version": "1.0.0",
+  "repository": {
+    "url": "https://github.com/andreidigori/civil-engineering-mechanics3.git",
+    "type": "git"
+  },
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
