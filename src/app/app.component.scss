@@ -1,14 +1,18 @@
+form {
+  margin: 16px 0;
+}
+
 mat-card,
 mat-accordion {
   margin: 16px;
 }
 
-.fullgraph {
-  margin-top: 8px;
-}
-
 mat-accordion {
   display: block;
+}
+
+.fullgraph {
+  margin-top: 8px;
 }
 
 sub.coefficient-index {

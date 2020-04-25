@@ -26,7 +26,7 @@ export class AppComponent implements OnInit {
       33: [null, this.validateMathInput]
     }),
     size: [null, Validators.required],
-    approximation: [2, [Validators.min(1), Validators.max(4)]],
+    approximation: [2, [Validators.required, Validators.min(1), Validators.max(4)]],
     fullgraph: true
   });
   katexOptions: KatexOptions = {

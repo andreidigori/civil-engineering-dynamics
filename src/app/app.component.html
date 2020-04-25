@@ -19,15 +19,11 @@
           <mat-option [value]="2">2 x 2</mat-option>
           <mat-option [value]="3">3 x 3</mat-option>
         </mat-select>
-        <mat-error *ngIf="inputForm.hasError('required', 'size')">Alege tipul sistemului</mat-error>
       </mat-form-field>
       <span fxFlex.gt-xs="16px"></span>
       <mat-form-field appearance="outline" color="accent" fxFlex fxFlex.xs="100">
         <mat-label>Cifre după virgulă</mat-label>
         <input matInput formControlName="approximation" type="number" min="1" max="4" step="1" placeholder="2" />
-        <mat-error *ngIf="inputForm.hasError('min', 'approximation') || inputForm.hasError('max', 'approximation')">
-          Aproximație invalidă
-        </mat-error>
       </mat-form-field>
     </div>
     <div class="fullgraph">
