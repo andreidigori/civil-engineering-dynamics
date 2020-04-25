@@ -118,10 +118,6 @@ export class AppComponent implements OnInit {
     this.inputForm.get(['coefficients', index]).setValue(value);
   }
 
-  back() {
-    history.back();
-  }
-
   clear() {
     this.lastDeterminant = 0;
     this.result = 0;
