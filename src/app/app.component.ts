@@ -3,8 +3,8 @@ import { FormBuilder, ValidationErrors, AbstractControl, Validators } from '@ang
 import { interval, Subscription, animationFrameScheduler } from 'rxjs';
 import { takeWhile, finalize } from 'rxjs/operators';
 import { KatexOptions } from 'ng-katex';
-import { math } from './custom-math';
-import { DeterminantPlotComponent } from './determinant-plot/determinant-plot.component';
+import { math } from './math/custom-math';
+import { DeterminantPlotComponent } from './components/determinant-plot/determinant-plot.component';
 
 @Component({
   selector: 'app-root',

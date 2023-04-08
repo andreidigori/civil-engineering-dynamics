@@ -17,7 +17,7 @@ import { KatexModule } from 'ng-katex';
 import { PlotlyViaWindowModule } from 'angular-plotly.js';
 import { environment } from '../environments/environment';
 import { AppComponent } from './app.component';
-import { DeterminantPlotComponent } from './determinant-plot/determinant-plot.component';
+import { DeterminantPlotComponent } from './components/determinant-plot/determinant-plot.component';
 
 @NgModule({
   declarations: [

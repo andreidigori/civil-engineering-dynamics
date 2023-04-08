@@ -1,7 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import * as Plotly from 'plotly.js';
 import { PlotComponent, PlotlyService } from 'angular-plotly.js';
-import { math } from '../custom-math';
+import { math } from '../../math/custom-math';
 
 @Component({
   selector: 'app-determinant-plot',
