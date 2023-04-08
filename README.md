@@ -1,4 +1,6 @@
-# Civil engineering Mecahincs 3
+# Civil engineering App - Stability and Dynamics
+
+Served on: https://dicg.utm.md/aplicatii/stabilitate-si-dinamica/
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.1.2.
 

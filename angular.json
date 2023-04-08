@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "civil-engineering-mechanics3": {
+    "civil-engineering-dynamics": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/civil-engineering-mechanics3",
+            "outputPath": "dist/civil-engineering-dynamics",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -73,19 +73,13 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "civil-engineering-mechanics3:build",
+            "browserTarget": "civil-engineering-dynamics:build",
             "aot": false
           },
           "configurations": {
             "production": {
-              "browserTarget": "civil-engineering-mechanics3:build:production"
+              "browserTarget": "civil-engineering-dynamics:build:production"
             }
-          }
-        },
-        "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": {
-            "browserTarget": "civil-engineering-mechanics3:build"
           }
         },
         "test": {
@@ -124,16 +118,16 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "civil-engineering-mechanics3:serve"
+            "devServerTarget": "civil-engineering-dynamics:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "civil-engineering-mechanics3:serve:production"
+              "devServerTarget": "civil-engineering-dynamics:serve:production"
             }
           }
         }
       }
     }
   },
-  "defaultProject": "civil-engineering-mechanics3"
+  "defaultProject": "civil-engineering-dynamics"
 }

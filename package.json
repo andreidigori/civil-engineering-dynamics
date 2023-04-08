@@ -1,8 +1,8 @@
 {
-  "name": "civil-engineering-mechanics3",
+  "name": "civil-engineering-dynamics",
   "version": "1.0.0",
   "repository": {
-    "url": "https://github.com/andreidigori/civil-engineering-mechanics3.git",
+    "url": "https://github.com/andreidigori/civil-engineering-dynamics.git",
     "type": "git"
   },
   "scripts": {
